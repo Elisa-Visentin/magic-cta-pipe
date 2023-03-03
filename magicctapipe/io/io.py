@@ -17,6 +17,7 @@ from ctapipe.containers import EventType
 from ctapipe.coordinates import CameraFrame
 from ctapipe.instrument import SubarrayDescription
 from lstchain.reco.utils import add_delta_t_key
+from io2 import TEL_COMBINATIONS, TEL_NAMES, GROUP_INDEX_TRAIN, NOMINAL_FOCLEN_LST, EFFECTIVE_FOCLEN_LST, TIME_DIFF_UPLIM, DEAD_TIME_LST, DEAD_TIME_MAGIC
 from magicctapipe.utils import calculate_mean_direction, transform_altaz_to_radec
 from pyirf.binning import join_bin_lo_hi
 from pyirf.simulations import SimulatedEventsInfo
@@ -126,7 +127,7 @@ def get_stereo_events(
 
     # Extract stereo events
     event_data_stereo["multiplicity"] = event_data_stereo.groupby(group_index).size()
-    event_data_stereo.query("multiplicity == [2, 3]", inplace=True)
+    event_data_stereo.query("multiplicity >1", inplace=True)
 
     # Check the total number of events
     n_events_total = len(event_data_stereo.groupby(group_index).size())
@@ -527,6 +528,91 @@ def load_train_data_files(
             data_train[tel_combo] = df_events
 
     return data_train
+##########################################################################################################################################
+def load_train_data_files_tel(
+    input_dir, offaxis_min=None, offaxis_max=None, true_event_class=None
+):
+    """
+    Loads DL1-stereo data files and separates the shower events per
+    telescope combination type for training RFs.
+
+    Parameters
+    ----------
+    input_dir: str
+        Path to a directory where input DL1-stereo files are stored
+    offaxis_min: str
+        Minimum shower off-axis angle allowed, whose format should be
+        acceptable by `astropy.units.quantity.Quantity`
+    offaxis_max: str
+        Maximum shower off-axis angle allowed, whose format should be
+        acceptable by `astropy.units.quantity.Quantity`
+    true_event_class: int
+        True event class of the input events
+
+    Returns
+    -------
+    data_train: dict
+        Data frames of the shower events separated telescope-wise
+        
+
+    Raises
+    ------
+    FileNotFoundError
+        If any DL1-stereo data files are not found in the input
+        directory
+    """
+
+    # Find the input files
+    file_mask = f"{input_dir}/dl1_stereo_*.h5"
+
+    input_files = glob.glob(file_mask)
+    input_files.sort()
+
+    if len(input_files) == 0:
+        raise FileNotFoundError(
+            "Could not find any DL1-stereo data files in the input directory."
+        )
+
+    # Load the input files
+    logger.info("\nThe following DL1-stereo data files are found:")
+
+    data_list = []
+    
+    for input_file in input_files:
+
+        logger.info(input_file)
+
+        df_events = pd.read_hdf(input_file, key="events/parameters")
+        data_list.append(df_events)
+
+    event_data = pd.concat(data_list)
+    event_data.set_index(GROUP_INDEX_TRAIN, inplace=True)
+    event_data.sort_index(inplace=True)
+    
+    if offaxis_min is not None:
+        offaxis_min = u.Quantity(offaxis_min).to_value("deg")
+        event_data.query(f"off_axis >= {offaxis_min}", inplace=True)
+
+    if offaxis_max is not None:
+        offaxis_max = u.Quantity(offaxis_max).to_value("deg")
+        event_data.query(f"off_axis <= {offaxis_max}", inplace=True)
+
+    if true_event_class is not None:
+        event_data["true_event_class"] = true_event_class
+
+    event_data = get_stereo_events(event_data, group_index=GROUP_INDEX_TRAIN)
+
+    data_train = {}
+    
+    # Loop over every telescope combination type
+    for tel, tel_id in enumerate(TEL_NAMES.keys()):
+        
+        df_events = event_data.query(f"tel_id == {tel_id}")
+
+        if not df_events.empty:
+            data_train[tel_id] = df_events
+    
+    return data_train
 
 
 def load_mc_dl2_data_file(input_file, quality_cuts, event_type, weight_type_dl2):
@@ -573,19 +659,21 @@ def load_mc_dl2_data_file(input_file, quality_cuts, event_type, weight_type_dl2)
 
     logger.info(f"\nExtracting the events of the '{event_type}' type...")
 
-    if event_type == "software":
+     if event_type == "software":
         # The events of the MAGIC-stereo combination are excluded
-        df_events.query("(combo_type > 0) & (magic_stereo == True)", inplace=True)
+        df_events.query("(combo_type > 0) & (magic_stereo == True)", inplace=True) ###################################FEDERICO
 
-    elif event_type == "software_only_3tel":
-        df_events.query("combo_type == 3", inplace=True)
+    elif event_type == "software_only_3tel":      
+       df_events.query("combo_type == 3", inplace=True)
+       
+    elif event_type == "software_6_tel":      
+       df_events.query("combo_type > 0", inplace=True)
 
     elif event_type == "magic_only":
         df_events.query("combo_type == 0", inplace=True)
 
     elif event_type != "hardware":
         raise ValueError(f"Unknown event type '{event_type}'.")
-
     n_events = len(df_events.groupby(["obs_id", "event_id"]).size())
     logger.info(f"--> {n_events} stereo events")
 
