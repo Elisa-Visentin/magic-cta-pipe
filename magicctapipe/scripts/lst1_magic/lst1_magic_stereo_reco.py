@@ -71,28 +71,23 @@ def calculate_pointing_separation(event_data):
         in the unit of degree
     """
 
-    # Extract LST-1 events
-    df_lst = event_data.query("tel_id == 1")
-
-    # Extract the MAGIC events seen by also LST-1
-    df_magic = event_data.query("tel_id == [2, 3]")
-    df_magic = df_magic.loc[df_lst.index]
-
-    # Calculate the mean of the M1 and M2 pointing directions
-    pnt_az_magic, pnt_alt_magic = calculate_mean_direction(
-        lon=df_magic["pointing_az"], lat=df_magic["pointing_alt"], unit="rad"
+    df=event_data[event_data.duplicated(["obs_id","event_id"])]
+    # Calculate the mean of all pointing directions
+    
+    pnt_az_avg, pnt_alt_avg = calculate_mean_direction(
+        lon=df["pointing_az"], lat=df["pointing_alt"], unit="rad"
     )
+
 
     # Calculate the angular distance of their pointing directions
     theta = angular_separation(
-        lon1=u.Quantity(df_lst["pointing_az"], unit="rad"),
-        lat1=u.Quantity(df_lst["pointing_alt"], unit="rad"),
-        lon2=u.Quantity(pnt_az_magic, unit="rad"),
-        lat2=u.Quantity(pnt_alt_magic, unit="rad"),
+        lon1=u.Quantity(df["pointing_az"], unit="rad"),
+        lat1=u.Quantity(df["pointing_alt"], unit="rad"),
+        lon2=u.Quantity(pnt_az_avg, unit="rad"),
+        lat2=u.Quantity(pnt_alt_avg, unit="rad"),
     )
-
-    theta = pd.Series(data=theta.to_value("deg"), index=df_lst.index)
-
+    print('theta', theta.to_value("deg"), 'index', df.index )
+    theta = pd.Series(data=theta.to_value("deg"), index=df.index)
     return theta
 
 
@@ -115,7 +110,14 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
     """
 
     config_stereo = config["stereo_reco"]
-
+    assigned_tel_ids = config["mc_tel_ids"]
+    tels = np.asarray(list(assigned_tel_ids.values()))
+    print('tels', tels)
+    LSTs_IDs = tels[0:4]
+    LSTs_in_use = np.where(LSTs_IDs > 0)[0] + 1   #Here we select which LSTs are/is in use
+    
+    MAGICs_IDs = tels[4:6]
+    MAGICs_in_use = np.where(MAGICs_IDs > 0)[0] + 1
     # Load the input file
     logger.info(f"\nInput file: {input_file}")
 
@@ -143,7 +145,7 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
     logger.info(f"\nMAGIC-only analysis: {magic_only_analysis}")
 
     if magic_only_analysis:
-        event_data.query("tel_id > 1", inplace=True)
+        event_data.query("tel_id in MAGICs_IDs", inplace=True)  
 
     logger.info(f"\nQuality cuts: {config_stereo['quality_cuts']}")
     event_data = get_stereo_events(event_data, config_stereo["quality_cuts"])
@@ -151,10 +153,10 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
     # Check the angular distance of the LST-1 and MAGIC pointing directions
     tel_ids = np.unique(event_data.index.get_level_values("tel_id")).tolist()
 
-    if (not is_simulation) and (tel_ids != [2, 3]):
+    if (not is_simulation):
         logger.info(
             "\nChecking the angular distances of "
-            "the LST-1 and MAGIC pointing directions..."
+            "the pointing directions..."
         )
 
         event_data.reset_index(level="tel_id", inplace=True)
