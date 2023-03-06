@@ -71,7 +71,7 @@ def calculate_pointing_separation(event_data):
         in the unit of degree
     """
 
-    df=event_data[event_data.duplicated(["obs_id","event_id"])]
+    df=event_data
     # Calculate the mean of all pointing directions
     
     pnt_az_avg, pnt_alt_avg = calculate_mean_direction(
