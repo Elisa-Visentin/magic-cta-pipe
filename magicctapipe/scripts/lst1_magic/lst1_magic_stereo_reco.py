@@ -114,10 +114,10 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
     tels = np.asarray(list(assigned_tel_ids.values()))
     print('tels', tels)
     LSTs_IDs = tels[0:4]
-    LSTs_in_use = np.where(LSTs_IDs > 0)[0] + 1   #Here we select which LSTs are/is in use
+    #LSTs_in_use = np.where(LSTs_IDs > 0)[0] + 1   #Here we select which LSTs are/is in use
     
     MAGICs_IDs = tels[4:6]
-    MAGICs_in_use = np.where(MAGICs_IDs > 0)[0] + 1
+    #MAGICs_in_use = np.where(MAGICs_IDs > 0)[0] + 1
     # Load the input file
     logger.info(f"\nInput file: {input_file}")
 
