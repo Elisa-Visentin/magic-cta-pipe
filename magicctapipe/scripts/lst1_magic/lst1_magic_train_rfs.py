@@ -196,7 +196,7 @@ def train_disp_regressor(input_dir, output_dir, config, use_unsigned_features=Fa
     # Load the input files
     logger.info(f"\nInput directory: {input_dir}")
 
-    event_data_train = load_train_data_files(
+    event_data_train = load_train_data_files_tel(
         input_dir, gamma_offaxis["min"], gamma_offaxis["max"]
     )
 
@@ -273,14 +273,14 @@ def train_event_classifier(
     # Load the input gamma MC data files
     logger.info(f"\nInput gamma MC directory: {input_dir_gamma}")
 
-    event_data_gamma = load_train_data_files(
+    event_data_gamma = load_train_data_files_tel(
         input_dir_gamma, gamma_offaxis["min"], gamma_offaxis["max"], EVENT_CLASS_GAMMA
     )
 
     # Load the input proton MC data files
     logger.info(f"\nInput proton MC directory: {input_dir_proton}")
 
-    event_data_proton = load_train_data_files(
+    event_data_proton = load_train_data_files_tel(
         input_dir_proton, true_event_class=EVENT_CLASS_PROTON
     )
 
