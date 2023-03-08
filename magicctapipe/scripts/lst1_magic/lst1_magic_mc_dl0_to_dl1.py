@@ -261,7 +261,7 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
     logger.info("\nMAGIC charge correction:")
     logger.info(format_object(config_magic["charge_correction"]))
 
-    use_charge_correction = config_magic["charge_correction"].("use")
+    use_charge_correction = config_magic["charge_correction"]["use"]
 
     if config_magic["magic_clean"]["find_hotpixels"]:
         logger.warning(
