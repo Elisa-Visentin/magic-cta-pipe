@@ -40,32 +40,6 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
-# The telescope IDs and names
-TEL_NAMES = {1: "LST-1", 2: "MAGIC-I", 3: "MAGIC-II"}
-
-# The telescope combination types
-TEL_COMBINATIONS = {
-    "M1_M2": [2, 3],  # combo_type = 0
-    "LST1_M1": [1, 2],  # combo_type = 1
-    "LST1_M2": [1, 3],  # combo_type = 2
-    "LST1_M1_M2": [1, 2, 3],  # combo_type = 3
-}
-
-# The pandas multi index to classify the events simulated by different
-# telescope pointing directions but have the same observation ID
-GROUP_INDEX_TRAIN = ["obs_id", "event_id", "true_alt", "true_az"]
-
-# The LST nominal and effective focal lengths
-NOMINAL_FOCLEN_LST = 28 * u.m
-EFFECTIVE_FOCLEN_LST = 29.30565 * u.m
-
-# The upper limit of the trigger time differences of consecutive events,
-# used when calculating the ON time and dead time correction factor
-TIME_DIFF_UPLIM = 0.1 * u.s
-
-# The LST-1 and MAGIC readout dead times
-DEAD_TIME_LST = 7.6 * u.us
-DEAD_TIME_MAGIC = 26 * u.us
 
 
 def format_object(input_object):
