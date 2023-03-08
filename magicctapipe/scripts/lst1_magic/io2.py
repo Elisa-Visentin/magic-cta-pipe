@@ -3,9 +3,15 @@
 from astropy import units as u
 
 
-
 # The telescope IDs and names
-TEL_NAMES = {1: "LST-1", 2:"LST-2", 3: "LST-3", 4: "LST-4", 5: "MAGIC-I", 6: "MAGIC-II"}
+TEL_NAMES = {
+    1: "LST-1",
+    2: "LST-2",
+    3: "LST-3",
+    4: "LST-4",
+    5: "MAGIC-I",
+    6: "MAGIC-II",
+}
 
 # The telescope combination types
 TEL_COMBINATIONS = {
@@ -66,9 +72,6 @@ TEL_COMBINATIONS = {
     "LST1_LST2_LST3_M1_M2": [1, 2, 3, 5, 6],
     "LST1_LST2_LST4_M1_M2": [1, 2, 4, 5, 6],
     "LST1_LST2_LST3_LST4_M1_M2": [1, 2, 3, 4, 5, 6],
-    
-    
-    
 }
 
 # The pandas multi index to classify the events simulated by different
@@ -76,8 +79,8 @@ TEL_COMBINATIONS = {
 GROUP_INDEX_TRAIN = ["obs_id", "event_id", "true_alt", "true_az"]
 
 # The LST nominal and effective focal lengths
-NOMINAL_FOCLEN_LST = 28* u.m
-EFFECTIVE_FOCLEN_LST = 29.30565* u.m
+NOMINAL_FOCLEN_LST = 28 * u.m
+EFFECTIVE_FOCLEN_LST = 29.30565 * u.m
 
 # The upper limit of the trigger time differences of consecutive events,
 # used when calculating the ON time and dead time correction factor
@@ -86,5 +89,3 @@ TIME_DIFF_UPLIM = 0.1 * u.s
 # The LST-1 and MAGIC readout dead times
 DEAD_TIME_LST = 7.6 * u.us
 DEAD_TIME_MAGIC = 26 * u.us
-
-

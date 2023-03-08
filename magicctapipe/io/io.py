@@ -17,7 +17,16 @@ from ctapipe.containers import EventType
 from ctapipe.coordinates import CameraFrame
 from ctapipe.instrument import SubarrayDescription
 from lstchain.reco.utils import add_delta_t_key
-from io2 import TEL_COMBINATIONS, TEL_NAMES, GROUP_INDEX_TRAIN, NOMINAL_FOCLEN_LST, EFFECTIVE_FOCLEN_LST, TIME_DIFF_UPLIM, DEAD_TIME_LST, DEAD_TIME_MAGIC
+from io2 import (
+    TEL_COMBINATIONS,
+    TEL_NAMES,
+    GROUP_INDEX_TRAIN,
+    NOMINAL_FOCLEN_LST,
+    EFFECTIVE_FOCLEN_LST,
+    TIME_DIFF_UPLIM,
+    DEAD_TIME_LST,
+    DEAD_TIME_MAGIC,
+)
 from magicctapipe.utils import calculate_mean_direction, transform_altaz_to_radec
 from pyirf.binning import join_bin_lo_hi
 from pyirf.simulations import SimulatedEventsInfo
@@ -39,7 +48,6 @@ __all__ = [
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
-
 
 
 def format_object(input_object):
@@ -502,6 +510,8 @@ def load_train_data_files(
             data_train[tel_combo] = df_events
 
     return data_train
+
+
 ##########################################################################################################################################
 def load_train_data_files_tel(
     input_dir, offaxis_min=None, offaxis_max=None, true_event_class=None
@@ -527,7 +537,7 @@ def load_train_data_files_tel(
     -------
     data_train: dict
         Data frames of the shower events separated telescope-wise
-        
+
 
     Raises
     ------
@@ -551,9 +561,8 @@ def load_train_data_files_tel(
     logger.info("\nThe following DL1-stereo data files are found:")
 
     data_list = []
-    
-    for input_file in input_files:
 
+    for input_file in input_files:
         logger.info(input_file)
 
         df_events = pd.read_hdf(input_file, key="events/parameters")
@@ -562,7 +571,7 @@ def load_train_data_files_tel(
     event_data = pd.concat(data_list)
     event_data.set_index(GROUP_INDEX_TRAIN, inplace=True)
     event_data.sort_index(inplace=True)
-    
+
     if offaxis_min is not None:
         offaxis_min = u.Quantity(offaxis_min).to_value("deg")
         event_data.query(f"off_axis >= {offaxis_min}", inplace=True)
@@ -577,15 +586,14 @@ def load_train_data_files_tel(
     event_data = get_stereo_events(event_data, group_index=GROUP_INDEX_TRAIN)
 
     data_train = {}
-    
+
     # Loop over every telescope combination type
     for tel, tel_id in enumerate(TEL_NAMES.keys()):
-        
         df_events = event_data.query(f"tel_id == {tel_id}")
 
         if not df_events.empty:
             data_train[tel_id] = df_events
-    
+
     return data_train
 
 
@@ -635,13 +643,15 @@ def load_mc_dl2_data_file(input_file, quality_cuts, event_type, weight_type_dl2)
 
     if event_type == "software":
         # The events of the MAGIC-stereo combination are excluded
-        df_events.query("(combo_type > 0) & (magic_stereo == True)", inplace=True) ###################################FEDERICO
+        df_events.query(
+            "(combo_type > 0) & (magic_stereo == True)", inplace=True
+        )  ###################################FEDERICO
 
-    elif event_type == "software_only_3tel":      
-       df_events.query("combo_type == 3", inplace=True)
-       
-    elif event_type == "software_6_tel":      
-       df_events.query("combo_type > 0", inplace=True)
+    elif event_type == "software_only_3tel":
+        df_events.query("combo_type == 3", inplace=True)
+
+    elif event_type == "software_6_tel":
+        df_events.query("combo_type > 0", inplace=True)
 
     elif event_type == "magic_only":
         df_events.query("combo_type == 0", inplace=True)

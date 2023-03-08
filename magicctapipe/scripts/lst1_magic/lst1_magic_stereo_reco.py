@@ -71,13 +71,12 @@ def calculate_pointing_separation(event_data):
         in the unit of degree
     """
 
-    df=event_data
+    df = event_data
     # Calculate the mean of all pointing directions
-    
+
     pnt_az_avg, pnt_alt_avg = calculate_mean_direction(
         lon=df["pointing_az"], lat=df["pointing_alt"], unit="rad"
     )
-
 
     # Calculate the angular distance of their pointing directions
     theta = angular_separation(
@@ -86,7 +85,7 @@ def calculate_pointing_separation(event_data):
         lon2=u.Quantity(pnt_az_avg, unit="rad"),
         lat2=u.Quantity(pnt_alt_avg, unit="rad"),
     )
-    print('theta', theta.to_value("deg"), 'index', df.index )
+    print("theta", theta.to_value("deg"), "index", df.index)
     theta = pd.Series(data=theta.to_value("deg"), index=df.index)
     return theta
 
@@ -112,12 +111,12 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
     config_stereo = config["stereo_reco"]
     assigned_tel_ids = config["mc_tel_ids"]
     tels = np.asarray(list(assigned_tel_ids.values()))
-    print('tels', tels)
-    #LSTs_IDs = tels[0:4]
-    #LSTs_in_use = np.where(LSTs_IDs > 0)[0] + 1   #Here we select which LSTs are/is in use
-    
+    print("tels", tels)
+    # LSTs_IDs = tels[0:4]
+    # LSTs_in_use = np.where(LSTs_IDs > 0)[0] + 1   #Here we select which LSTs are/is in use
+
     MAGICs_IDs = tels[4:6]
-    #MAGICs_in_use = np.where(MAGICs_IDs > 0)[0] + 1
+    # MAGICs_in_use = np.where(MAGICs_IDs > 0)[0] + 1
     # Load the input file
     logger.info(f"\nInput file: {input_file}")
 
@@ -143,12 +142,12 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
 
     # Apply the event cuts
     logger.info(f"\nMAGIC-only analysis: {magic_only_analysis}")
-    event_magic=[]
+    event_magic = []
     if magic_only_analysis:
         for ID in MAGICs_IDs:
-            evt_magic=event_data.query("tel_id==ID")  
+            evt_magic = event_data.query("tel_id==ID")
             event_magic.append(evt_magic)
-        event_data=pd.concat(event_magic)    
+        event_data = pd.concat(event_magic)
 
     logger.info(f"\nQuality cuts: {config_stereo['quality_cuts']}")
     event_data = get_stereo_events(event_data, config_stereo["quality_cuts"])
@@ -156,11 +155,8 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
     # Check the angular distance of the LST-1 and MAGIC pointing directions
     tel_ids = np.unique(event_data.index.get_level_values("tel_id")).tolist()
 
-    if (not is_simulation):
-        logger.info(
-            "\nChecking the angular distances of "
-            "the pointing directions..."
-        )
+    if not is_simulation:
+        logger.info("\nChecking the angular distances of " "the pointing directions...")
 
         event_data.reset_index(level="tel_id", inplace=True)
 

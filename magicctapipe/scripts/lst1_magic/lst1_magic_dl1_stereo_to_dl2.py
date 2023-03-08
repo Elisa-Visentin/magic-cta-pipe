@@ -59,15 +59,15 @@ def apply_rfs(event_data, estimator):
     """
 
     tel_ids = list(estimator.telescope_rfs.keys())
-    
+
     # Extract the events of the same telescope combination type
     tels = tel_ids[0]
-    
+
     df_events = event_data.query(f"tel_id == {tels}")
-    
+
     # Apply the RFs
     reco_params = estimator.predict(df_events)
-    
+
     return reco_params
 
 
@@ -97,7 +97,6 @@ def reconstruct_arrival_direction(event_data, tel_descriptions):
     tel_ids = np.unique(event_data.index.get_level_values("tel_id"))
 
     for tel_id in tel_ids:
-
         df_events = event_data.query(f"tel_id == {tel_id}")
 
         tel_pointing = AltAz(
@@ -116,7 +115,6 @@ def reconstruct_arrival_direction(event_data, tel_descriptions):
         cog_coord = cog_coord.transform_to(tel_frame)
 
         for flip in [0, 1]:
-
             psi_flipped = df_events["psi"] + 180 * flip
 
             event_coord = cog_coord.directional_offset_by(
@@ -149,7 +147,6 @@ def reconstruct_arrival_direction(event_data, tel_descriptions):
     reco_params = pd.DataFrame()
 
     for combo_type, tel_ids in enumerate(TEL_COMBINATIONS.values()):
-
         df_events = params_with_flips.query(f"combo_type == {combo_type}")
 
         n_events = len(df_events.groupby(["obs_id", "event_id"]).size())
@@ -178,7 +175,6 @@ def reconstruct_arrival_direction(event_data, tel_descriptions):
 
         # Loop over every flip combination
         for i_flip, flip_combo in enumerate(flip_combinations):
-
             container = {}
 
             # Set the directions of a given flip combination
@@ -188,7 +184,6 @@ def reconstruct_arrival_direction(event_data, tel_descriptions):
                 )
 
             for tel_id_1, tel_id_2 in tel_any2_combinations:
-
                 # Calculate the distance of the 2-tel combination
                 theta = angular_separation(
                     lon1=u.Quantity(container[tel_id_1]["reco_az"], unit="deg"),
@@ -284,11 +279,9 @@ def dl1_stereo_to_dl2(input_file_dl1, input_dir_rfs, output_dir):
     n_files_energy = len(input_files_energy)
 
     if n_files_energy > 0:
-
         logger.info(f"\nIn total {n_files_energy} energy regressor files are found:")
 
         for input_file_energy in input_files_energy:
-
             logger.info(f"Applying {input_file_energy}...")
 
             energy_regressor = EnergyRegressor()
@@ -307,11 +300,9 @@ def dl1_stereo_to_dl2(input_file_dl1, input_dir_rfs, output_dir):
     n_files_disp = len(input_files_dips)
 
     if n_files_disp > 0:
-
         logger.info(f"\nIn total {n_files_disp} DISP regressor files are found:")
 
         for input_file_disp in input_files_dips:
-
             logger.info(f"Applying {input_file_disp}...")
 
             disp_regressor = DispRegressor()
@@ -336,11 +327,9 @@ def dl1_stereo_to_dl2(input_file_dl1, input_dir_rfs, output_dir):
     n_files_class = len(input_files_class)
 
     if n_files_class > 0:
-
         logger.info(f"\nIn total {n_files_class} event classifier files are found:")
 
         for input_file_class in input_files_class:
-
             logger.info(f"Applying {input_file_class}...")
 
             event_classifier = EventClassifier()
@@ -356,7 +345,6 @@ def dl1_stereo_to_dl2(input_file_dl1, input_dir_rfs, output_dir):
     # `time_nanosec` but instead set `timestamp`, since the precise
     # timestamps are not needed anymore
     if "time_sec" in event_data.columns:
-
         time_sec = u.Quantity(event_data["time_sec"], unit="s")
         time_nanosec = u.Quantity(event_data["time_nanosec"], unit="ns")
         timestamps = time_sec + time_nanosec
@@ -397,7 +385,6 @@ def dl1_stereo_to_dl2(input_file_dl1, input_dir_rfs, output_dir):
 
 
 def main():
-
     start_time = time.time()
 
     parser = argparse.ArgumentParser()
