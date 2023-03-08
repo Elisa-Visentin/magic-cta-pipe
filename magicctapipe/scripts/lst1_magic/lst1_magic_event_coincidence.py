@@ -62,7 +62,7 @@ from magicctapipe.io import (
     load_magic_dl1_data_files,
     save_pandas_data_in_table,
 )
-from magicctapipe.io.io import TEL_NAMES
+from io2 import TEL_NAMES
 
 __all__ = ["event_coincidence"]
 
