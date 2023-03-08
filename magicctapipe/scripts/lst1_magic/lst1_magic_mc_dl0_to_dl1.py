@@ -67,7 +67,7 @@ logger.setLevel(logging.INFO)
 # The CORSIKA particle types
 PARTICLE_TYPES = {1: "gamma", 3: "electron", 14: "proton", 402: "helium"}
 
-def Calibrate_LST(event, tel_id, rng, config_lst, camera_geoms, calibrator_lst, increase_nsb, use_time_delta_cleaning, use_dynamic_cleaning ):
+def Calibrate_LST(event, tel_id, rng, config_lst, camera_geoms, calibrator_lst, use_time_delta_cleaning, use_dynamic_cleaning ):
 
     """
     This function computes and returns signal_pixels, image, and peak_time for LST
@@ -79,6 +79,7 @@ def Calibrate_LST(event, tel_id, rng, config_lst, camera_geoms, calibrator_lst, 
     image = event.dl1.tel[tel_id].image.astype(np.float64)
     peak_time = event.dl1.tel[tel_id].peak_time.astype(np.float64)
     
+    increase_nsb = config_lst["increase_nsb"]["use"]
     increase_psf = config_lst["increase_psf"]["use"]
     use_only_main_island = config_lst["use_only_main_island"]
     
@@ -218,8 +219,8 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
     logger.info("\nLST PSF modifier:")
     logger.info(format_object(config_lst["increase_psf"]))
 
-    increase_nsb = config_lst["increase_nsb"].pop("use")
-    increase_psf = config_lst["increase_psf"].("use")
+    increase_nsb = config_lst["increase_nsb"]["use"]
+    increase_psf = config_lst["increase_psf"]["use"]
 
     if increase_nsb:
         rng = np.random.default_rng(obs_id)
@@ -288,7 +289,7 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
     zenith = 90 - sim_config["max_alt"].to_value("deg")
     azimuth = Angle(sim_config["max_az"]).wrap_at("360 deg").degree
     logger.info(np.asarray(list(assigned_tel_ids.values())))
-       LSTs_IDs = np.asarray(list(assigned_tel_ids.values())[0:4])
+    LSTs_IDs = np.asarray(list(assigned_tel_ids.values())[0:4])
     LSTs_in_use = np.where(LSTs_IDs > 0)[0] + 1   #Here we select which LSTs are/is in use
     
     if len(LSTs_in_use) == 0:
@@ -335,7 +336,7 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
 
                 if tel_id in LSTs_IDs:   ##If the ID is in the LST list, we call Calibrate_LST()
                     # Calibrate the LST-1 event
-                    signal_pixels, image, peak_time = Calibrate_LST(event, tel_id, rng, config_lst, camera_geoms, calibrator_lst, increase_nsb, use_time_delta_cleaning, use_dynamic_cleaning)   
+                    signal_pixels, image, peak_time = Calibrate_LST(event, tel_id, rng, config_lst, camera_geoms, calibrator_lst, use_time_delta_cleaning, use_dynamic_cleaning)   
                 elif tel_id in MAGICs_IDs:
                     # Calibrate the MAGIC event
                     signal_pixels, image, peak_time = Calibrate_MAGIC(event, tel_id, config_magic, magic_clean, calibrator_magic)
