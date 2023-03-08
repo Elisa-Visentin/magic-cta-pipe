@@ -180,8 +180,8 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
 
     event_source = EventSource(
         input_file,
-        allowed_tels=list(filter(lambda check_id: check_id > 0,assigned_tel_i
-        focal_length_choice=focal_length,    
+        allowed_tels=list(filter(lambda check_id: check_id > 0,assigned_tel_ids.values())), 
+        focal_length_choice=focal_length,   
     )
 
     obs_id = event_source.obs_ids[0]
