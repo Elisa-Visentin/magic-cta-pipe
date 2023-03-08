@@ -113,7 +113,7 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
     assigned_tel_ids = config["mc_tel_ids"]
     tels = np.asarray(list(assigned_tel_ids.values()))
     print('tels', tels)
-    LSTs_IDs = tels[0:4]
+    #LSTs_IDs = tels[0:4]
     #LSTs_in_use = np.where(LSTs_IDs > 0)[0] + 1   #Here we select which LSTs are/is in use
     
     MAGICs_IDs = tels[4:6]
@@ -143,9 +143,12 @@ def stereo_reconstruction(input_file, output_dir, config, magic_only_analysis=Fa
 
     # Apply the event cuts
     logger.info(f"\nMAGIC-only analysis: {magic_only_analysis}")
-
+    event_magic=[]
     if magic_only_analysis:
-        event_data.query("tel_id in MAGICs_IDs", inplace=True)  
+        for ID in MAGICs_IDs:
+            evt_magic=event_data.query("tel_id==ID")  
+            event_magic.append(evt_magic)
+        event_data=pd.concat(event_magic)    
 
     logger.info(f"\nQuality cuts: {config_stereo['quality_cuts']}")
     event_data = get_stereo_events(event_data, config_stereo["quality_cuts"])
