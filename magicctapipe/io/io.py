@@ -659,7 +659,7 @@ def load_mc_dl2_data_file(input_file, quality_cuts, event_type, weight_type_dl2)
 
     logger.info(f"\nExtracting the events of the '{event_type}' type...")
 
-     if event_type == "software":
+    if event_type == "software":
         # The events of the MAGIC-stereo combination are excluded
         df_events.query("(combo_type > 0) & (magic_stereo == True)", inplace=True) ###################################FEDERICO
 
