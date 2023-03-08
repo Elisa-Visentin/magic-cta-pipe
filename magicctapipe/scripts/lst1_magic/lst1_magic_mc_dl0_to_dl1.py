@@ -502,7 +502,7 @@ def main():
         default="./config.yaml",
         help="Path to a configuration file",
     )
-     parser.add_argument(
+    parser.add_argument(
         "--focal_length_choice",
         "-f",                                 
         dest="focal_length_choice",
