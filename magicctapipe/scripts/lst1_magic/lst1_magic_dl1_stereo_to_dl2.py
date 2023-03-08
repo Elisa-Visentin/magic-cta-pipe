@@ -30,7 +30,7 @@ from astropy.coordinates import AltAz, SkyCoord, angular_separation
 from ctapipe.coordinates import TelescopeFrame
 from ctapipe.instrument import SubarrayDescription
 from magicctapipe.io import get_stereo_events, save_pandas_data_in_table
-from io2 import TEL_NAMES, TEL_COMBINATIONS
+from io2 import TEL_COMBINATIONS
 from magicctapipe.reco import DispRegressor, EnergyRegressor, EventClassifier
 
 __all__ = ["apply_rfs", "reconstruct_arrival_direction", "dl1_stereo_to_dl2"]
