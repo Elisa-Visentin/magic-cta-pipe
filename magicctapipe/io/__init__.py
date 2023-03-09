@@ -22,6 +22,7 @@ from .io import (
     load_magic_dl1_data_files,
     load_mc_dl2_data_file,
     load_train_data_files,
+    load_train_data_files_tel,
     save_pandas_data_in_table,
 )
 
