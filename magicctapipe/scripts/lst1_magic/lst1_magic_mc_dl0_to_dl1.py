@@ -77,6 +77,7 @@ def Calibrate_LST(
     calibrator_lst,
     use_time_delta_cleaning,
     use_dynamic_cleaning,
+    increase_nsb
 ):
     """
     This function computes and returns signal_pixels, image, and peak_time for LST
@@ -88,7 +89,7 @@ def Calibrate_LST(
     image = event.dl1.tel[tel_id].image.astype(np.float64)
     peak_time = event.dl1.tel[tel_id].peak_time.astype(np.float64)
 
-    increase_nsb = config_lst["increase_nsb"]["use"]
+    #increase_nsb = config_lst["increase_nsb"]["use"]
     increase_psf = config_lst["increase_psf"]["use"]
     use_only_main_island = config_lst["use_only_main_island"]
 
@@ -224,7 +225,7 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
     logger.info("\nLST PSF modifier:")
     logger.info(format_object(config_lst["increase_psf"]))
 
-    increase_nsb = config_lst["increase_nsb"]["use"]
+    increase_nsb = config_lst["increase_nsb"].pop("use")
     increase_psf = config_lst["increase_psf"]["use"]
 
     if increase_nsb:
@@ -359,6 +360,7 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
                         calibrator_lst,
                         use_time_delta_cleaning,
                         use_dynamic_cleaning,
+                        increase_nsb
                     )
                 elif tel_id in MAGICs_IDs:
                     # Calibrate the MAGIC event
