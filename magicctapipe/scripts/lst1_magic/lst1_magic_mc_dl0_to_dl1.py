@@ -58,7 +58,7 @@ from magicctapipe.io import SimEventInfoContainer, format_object
 from magicctapipe.utils import calculate_disp, calculate_impact
 from traitlets.config import Config
 
-__all__ = ["mc_dl0_to_dl1"]
+__all__ = ["Calibrate_LST", "Calibrate_MAGIC", "mc_dl0_to_dl1"]
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
