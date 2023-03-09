@@ -39,6 +39,7 @@ __all__ = [
     "load_lst_dl1_data_file",
     "load_magic_dl1_data_files",
     "load_train_data_files",
+    "load_train_data_files_tel",
     "load_mc_dl2_data_file",
     "load_dl2_data_file",
     "load_irf_files",
