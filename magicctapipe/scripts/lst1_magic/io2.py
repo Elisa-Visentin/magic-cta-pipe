@@ -4,7 +4,7 @@ from astropy import units as u
 
 
 # The telescope IDs and names
-TEL_NAMES = {
+TEL_NAMES_1 = {
     1: "LST-1",
     2: "LST-2",
     3: "LST-3",
@@ -14,7 +14,7 @@ TEL_NAMES = {
 }
 
 # The telescope combination types
-TEL_COMBINATIONS = {
+TEL_COMBINATIONS_1 = {
     "M1_M2": [5, 6],  # combo_type = 0
     "LST1_M1": [1, 5],  # combo_type = 1
     "LST1_M2": [1, 6],  # combo_type = 2
@@ -73,7 +73,16 @@ TEL_COMBINATIONS = {
     "LST1_LST2_LST4_M1_M2": [1, 2, 4, 5, 6],
     "LST1_LST2_LST3_LST4_M1_M2": [1, 2, 3, 4, 5, 6],
 }
+# The telescope IDs and names
+TEL_NAMES = {1: "LST-1", 2: "MAGIC-I", 3: "MAGIC-II"}
 
+# The telescope combination types
+TEL_COMBINATIONS = {
+    "M1_M2": [2, 3],  # combo_type = 0
+    "LST1_M1": [1, 2],  # combo_type = 1
+    "LST1_M2": [1, 3],  # combo_type = 2
+    "LST1_M1_M2": [1, 2, 3],  # combo_type = 3
+}
 # The pandas multi index to classify the events simulated by different
 # telescope pointing directions but have the same observation ID
 GROUP_INDEX_TRAIN = ["obs_id", "event_id", "true_alt", "true_az"]
