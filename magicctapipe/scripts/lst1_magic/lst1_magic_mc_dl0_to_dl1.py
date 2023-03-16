@@ -482,13 +482,16 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
     tel_descriptions_lst_magic = {}
     for n, k in enumerate(assigned_tel_ids.values()):
         if k > 0:
-            tel_positions_lst_magic[n + 1] = tel_positions[k] - position_mean
-            tel_descriptions_lst_magic[n + 1] = tel_descriptions[k]
+            tel_positions_lst_magic[k] = tel_positions[k] - position_mean
+            tel_descriptions_lst_magic[k] = tel_descriptions[k]
 
     subarray_lst_magic = SubarrayDescription(
         "LST-MAGIC-Array", tel_positions_lst_magic, tel_descriptions_lst_magic
     )
+    tel_positions = subarray_lst_magic.positions
 
+    logger.info("\nTelescope positions:")
+    logger.info(format_object(tel_positions))
     # Save the subarray description
     subarray_lst_magic.to_hdf(output_file)
 
