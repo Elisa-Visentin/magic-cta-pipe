@@ -320,7 +320,7 @@ def mc_dl0_to_dl1(input_file, output_dir, config, focal_length):
             tels_with_trigger = event.trigger.tels_with_trigger
 
             # Check if the event triggers both M1 and M2 or not
-            if((set(MAGICs_IDs).issubset(set(tels_with_trigger))) and (len(MAGICs_in_use)==2)):
+            if((set(MAGICs_IDs).issubset(set(tels_with_trigger))) and (MAGICs_in_use=="MAGIC1_MAGIC2")):
                 magic_stereo = True   #If both have trigger, then magic_stereo = True
             else:
                 magic_stereo = False
